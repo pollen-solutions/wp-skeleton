@@ -1,7 +1,7 @@
 .DS_Store
 /.idea
-!/.env.example
 /.env*
+!/.env.example
 /composer.lock
 /package-lock.json
 /yarn.lock
