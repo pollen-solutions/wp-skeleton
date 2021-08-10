@@ -1,0 +1,79 @@
+{
+  "name": "pollen-solutions/wp-skeleton",
+  "description": "Pollen Solution Wordpress project skeleton.",
+  "keywords": [
+    "pollen solutions",
+    "skeleton",
+    "wordpress",
+    "boilerplate"
+  ],
+  "type": "project",
+  "license": "MIT",
+  "time": "2021-08-10",
+  "authors": [
+    {
+      "name": "Jordy Manner",
+      "email": "jordy@presstify.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "php": "^7.4 || ^8.0",
+    "ext-json": "*",
+    "composer/installers": "^1.11",
+    "johnpbloch/wordpress-core-installer": "^2.0",
+    "johnpbloch/wordpress-core": "^5.8",
+    "pollen-solutions/asset": "^1.0",
+    "pollen-solutions/debug": "^1.0",
+    "pollen-solutions/wp-kernel": "^1.0",
+    "pollen-solutions/view-extends": "^1.0",
+    "wpackagist-theme/twentytwentyone": "^1.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "roave/security-advisories": "dev-latest"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Test\\": "tests"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "extra": {
+    "installer-paths": {
+      "public/mu-plugins/{$name}": [
+        "type:wordpress-muplugin"
+      ],
+      "public/plugins/{$name}": [
+        "type:wordpress-plugin"
+      ],
+      "public/themes/{$name}": [
+        "type:wordpress-theme"
+      ]
+    },
+    "wordpress-install-dir": "public/wordpress"
+  },
+  "scripts": {
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "vendor/bin/wp-salt >> .env"
+    ]
+  }
+}
