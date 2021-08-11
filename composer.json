@@ -29,6 +29,7 @@
     "johnpbloch/wordpress-core-installer": "^2.0",
     "johnpbloch/wordpress-core": "^5.8",
     "pollen-solutions/asset": "^1.0",
+    "pollen-solutions/console": "^1.0",
     "pollen-solutions/debug": "^1.0",
     "pollen-solutions/wp-kernel": "^1.0",
     "pollen-solutions/view-extends": "^1.0",
