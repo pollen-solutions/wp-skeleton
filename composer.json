@@ -19,6 +19,10 @@
   "repositories": [
     {
       "type": "composer",
+      "url": "https://composer.presstify.com/pollen-solutions/"
+    },
+    {
+      "type": "composer",
       "url": "https://wpackagist.org"
     }
   ],
@@ -26,13 +30,19 @@
     "php": "^7.4 || ^8.0",
     "ext-json": "*",
     "composer/installers": "^1.11",
-    "johnpbloch/wordpress-core-installer": "^2.0",
     "johnpbloch/wordpress-core": "^5.8",
+    "johnpbloch/wordpress-core-installer": "^2.0",
     "pollen-solutions/asset": "^1.0",
     "pollen-solutions/console": "^1.0",
     "pollen-solutions/debug": "^1.0",
-    "pollen-solutions/wp-kernel": "^1.0",
+    "pollen-solutions/log": "^1.0",
     "pollen-solutions/view-extends": "^1.0",
+    "pollen-solutions/wp-comment": "^1.0",
+    "pollen-solutions/wp-database": "^1.0",
+    "pollen-solutions/wp-kernel": "^1.0",
+    "pollen-solutions/wp-post": "^1.0",
+    "pollen-solutions/wp-term": "^1.0",
+    "pollen-solutions/wp-user": "^v1.0",
     "wpackagist-theme/twentytwentyone": "^1.4"
   },
   "require-dev": {
@@ -49,7 +59,7 @@
       "App\\Test\\": "tests"
     }
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "config": {
     "preferred-install": "dist",
