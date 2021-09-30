@@ -1,9 +1,55 @@
+## IDE
+/.idea/
+
+## HIDDEN FILES
+.svn
+.svnignore
 .DS_Store
-/.idea
-/.env*
-!/.env.example
-/composer.lock
-/package-lock.json
-/yarn.lock
-/node_modules/
+
+## CERBOT
+/.well-known/
+
+## PACKAGES
+### COMPOSER
 /vendor/
+/composer.lock
+### NPM
+/node_modules/
+/package-lock.json
+### YARN
+/yarn.lock
+
+## ENV
+/.env.local
+/.env.*.local
+
+## WORDPRESS
+### LANGUAGES
+/public/languages/*
+!/public/languages/.gitignore
+### MU-PLUGINS
+/public/mu-plugins/*
+!/public/mu-plugins/index.php
+!/public/mu-plugins/pollen-autoloader.php
+!/public/mu-plugins/{{ name of a mu-plugin }}
+### PLUGINS
+/public/plugins/*
+!/public/plugins/index.php
+!/public/plugins/{{ name of a plugin }}
+### THEMES
+/public/themes/*
+!/public/themes/index.php
+!/public/themes/{{ name of your theme }}
+### UPGRADE
+/public/upgrade/*
+!/public/upgrade/.gitignore
+### UPLOADS
+/public/uploads/*
+!/public/uploads/.htaccess
+!/public/uploads/index.php
+### CORE
+/public/wordpress
+### DEBUG
+/public/debug.log
+
+

@@ -9,7 +9,7 @@
   ],
   "type": "project",
   "license": "MIT",
-  "time": "2021-08-10",
+  "time": "2021-09-30",
   "authors": [
     {
       "name": "Jordy Manner",
@@ -17,10 +17,6 @@
     }
   ],
   "repositories": [
-    {
-      "type": "composer",
-      "url": "https://composer.presstify.com/pollen-solutions/"
-    },
     {
       "type": "composer",
       "url": "https://wpackagist.org"
