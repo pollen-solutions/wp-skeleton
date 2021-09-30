@@ -1,0 +1,4 @@
+# Prevent PHP file execution
+<Files *.php>
+deny from all
+</Files>

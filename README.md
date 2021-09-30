@@ -4,6 +4,8 @@
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE.md)
 [![PHP Supported Versions](https://img.shields.io/badge/PHP->=7.4-8892BF?style=for-the-badge&logo=php)](https://www.php.net/supported-versions.php)
 
+**Wordpress Skeleton** Component provides structures of WordPress project based on Pollen Solutions suite.
+
 ## Table of contents
 
 - [Features](#Features)
@@ -18,18 +20,78 @@
 composer create-project pollen-solutions/wp-skeleton project_name
 ```
 
-## Configuration
+## Environment configuration
 
-## Serve
+During the installation process, the file ```.env.example``` is copied to ```.env```.
+This file contains all required default configuration.
 
-Serve your application using the [built-in web server in PHP](https://www.php.net/manual/en/features.commandline.webserver.php) (or your server of choice) from the `public` directory:
+```dotenv
+# ENVIRONMENT
+APP_ENV=dev
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+APP_TIMEZONE=Europe/Paris
 
-```sh
+# DATABASE
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pollen-solutions
+DB_USERNAME=root
+DB_PASSWORD=root
+DB_PREFIX=
+```
+
+You can directly edit this file, but the best practice is to create a new ```.env.local``` file that will contain all of
+the configuration attributes specific to your installation.
+
+Through the ```.env.local``` file you can if necessary override an environment value declared in the ```.env``` file or
+define new ones :
+
+```dotenv
+# DATABASE
+DB_CONNECTION=sqlite
+DB_HOST=
+DB_USERNAME=
+DB_PASSWORD=
+
+#REDIS
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+```
+
+### .env syntax
+
+```dotenv
+STRING_VAR=string
+QUOTES_VAR="quoted variable"
+EMPTY_STRING=
+BOOL_VAR=true
+NULL_VAR=null
+```
+
+You can use another previously defined environment variable like this :
+
+```dotenv
+DB_USERNAME=root
+DB_PASSWORD=${DB_USER}
+```
+
+Pollen solutions suite uses the **vlucas/phpdotenv** library to work. More information
+on its [github repository](https://github.com/vlucas/phpdotenv).
+
+## Serve the app
+
+Serve your application using
+the [built-in web server in PHP](https://www.php.net/manual/en/features.commandline.webserver.php) (or your server of
+choice) from the ```public``` directory:
+
+```shell
 php -S 127.0.0.1:8000 -t public
 ```
 
-Visit your application in the browser:
+Visit the application in the browser:
 
-- [`http://127.0.0.1:8000`](http://127.0.0.1:8000)
+- [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 

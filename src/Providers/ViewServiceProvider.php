@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Pollen\Container\BootableServiceProvider;
 use Pollen\Support\Env;
 use Pollen\View\ViewManagerInterface;
+use Pollen\Kernel\Container\BootableServiceProvider;
 
 class ViewServiceProvider extends BootableServiceProvider
 {
-    /**
-     * @inheritDoc
-     */
     public function boot(): void
     {
         /** @var ViewManagerInterface $view */
-        $view = $this->getContainer()->get(ViewManagerInterface::class);
+        $view = $this->app->get(ViewManagerInterface::class);
 
         $view
             // Use plates|twig as view engine
             ->setDefaultEngine('plates')
-            ->setDirectory(dirname(__DIR__, 2) . '/resources/views')
-            ->setCacheDir(!Env::inDev() ? dirname(__DIR__, 2) . '/var/cache/views' : null);
+            ->setDirectory($this->app->getBasePath('/resources/views'))
+            ->setCacheDir(!Env::inDev() ? $this->app->getBasePath('/var/cache/views') : null);
     }
 }

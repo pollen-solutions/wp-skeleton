@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use Pollen\Container\BootableServiceProvider;
 use Pollen\Database\DatabaseManagerInterface;
+use Pollen\Kernel\Container\BootableServiceProvider;
 
 class DatabaseServiceProvider extends BootableServiceProvider
 {
-    /**
-     * @inheritDoc
-     */
     public function boot(): void
     {
         /** @var DatabaseManagerInterface $db * /
-        $db = $this->getContainer()->get(DatabaseManagerInterface::class);
+        $db = $this->app->get(DatabaseManagerInterface::class);
         /**/
     }
 }
