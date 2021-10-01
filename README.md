@@ -33,13 +33,13 @@ APP_URL=http://127.0.0.1:8000
 APP_TIMEZONE=Europe/Paris
 
 # DATABASE
-DB_CONNECTION=mysql
+DB_DRIVER=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=pollen-solutions
+DB_DATABASE=wordpress
 DB_USERNAME=root
-DB_PASSWORD=root
-DB_PREFIX=
+DB_PASSWORD=
+DB_PREFIX=wp_
 ```
 
 You can directly edit this file, but the best practice is to create a new ```.env.local``` file that will contain all of
@@ -50,10 +50,10 @@ define new ones :
 
 ```dotenv
 # DATABASE
-DB_CONNECTION=sqlite
-DB_HOST=
-DB_USERNAME=
+DB_DATABASE=pollen-solutions
+DB_USERNAME=root
 DB_PASSWORD=
+DB_PREFIX=xyz_
 
 #REDIS
 REDIS_CLIENT=phpredis
@@ -93,5 +93,3 @@ php -S 127.0.0.1:8000 -t public
 Visit the application in the browser:
 
 - [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-
