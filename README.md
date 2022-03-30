@@ -8,11 +8,90 @@
 
 ## Table of contents
 
+- [Directory structure](#Directory structure)
 - [Features](#Features)
 - [Installation](#Installation)
 - [Configuration](#Configuration)
 
+## Directory structure
+
+### The Root directory structure
+
+```
+|–– bin
+|–– config
+|–– docker
+|–– docs
+|–– (node_modules)
+|–– public
+    |–– (assets)
+    |–– languages
+    |–– mu-plugins
+    |–– plugins
+    |–– themes
+    |–– uploads
+    |–– (wordpress)
+|–– resources
+    |–– assets
+    |–– views
+|–– src
+    |–– Providers
+    |–– App.php
+|–– tests
+|–– var
+|–– (vendor)
+```
+
+### The Root directory
+
+#### src
+
+The ```src``` directory contains the core PHP code of your application.
+
+#### resources
+
+The ```resources``` directory contains the templating code. This included views and css, js, fonts, images and all other
+assets files ...
+
+#### public
+
+The ```public``` directory contains the index.php file, which is the entry point for all requests entering your
+application and configures autoload.
+
+This directory also houses the build assets such css, js, fonts, images and all other assets files.
+
+#### config
+
+The ```config``` directory, as the name implies, contains all of your application's PHP configuration files.
+
+#### docs
+
+The ```docs``` directory contains the complete documentation of the micro framework and its components.
+
+### The Application directory structure (src)
+
+============
+@todo
+============
+
+- Providers
+- App.php
+
+#### The Templating directory structure (resources)
+
+============
+@todo
+============
+
+- assets
+- views
+
+
 ## Features
+
+============
+@todo
+============
 
 ## Installation
 
@@ -80,7 +159,19 @@ DB_PASSWORD=${DB_USER}
 Pollen solutions suite uses the **vlucas/phpdotenv** library to work. More information
 on its [github repository](https://github.com/vlucas/phpdotenv).
 
-## Serve the app
+### .env.local
+
+============
+@todo
+============
+
+### wp.config.local
+
+============
+@todo
+============
+
+### Serve the app
 
 Serve your application using
 the [built-in web server in PHP](https://www.php.net/manual/en/features.commandline.webserver.php) (or your server of
@@ -93,3 +184,9 @@ php -S 127.0.0.1:8000 -t public
 Visit the application in the browser:
 
 - [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+## Configuration
+
+============
+@todo
+============

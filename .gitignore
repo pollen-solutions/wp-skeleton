@@ -1,23 +1,19 @@
-## IDE
-/.idea/
-
 ## HIDDEN FILES
-.svn
-.svnignore
 .DS_Store
 
 ## CERBOT
 /.well-known/
 
-## PACKAGES
+## PACKAGE MANAGER
 ### COMPOSER
 /vendor/
-/composer.lock
+composer.lock
 ### NPM
 /node_modules/
-/package-lock.json
+package-lock.json
 ### YARN
-/yarn.lock
+/.cache/
+/.yarn/
 
 ## ENV
 /.env.local
@@ -35,11 +31,11 @@
 ### PLUGINS
 /public/plugins/*
 !/public/plugins/index.php
-!/public/plugins/{{ name of a plugin }}
+!/public/themes/{{ name of a plugin }}
 ### THEMES
 /public/themes/*
 !/public/themes/index.php
-!/public/themes/{{ name of your theme }}
+!/public/themes/{{ name of a theme }}
 ### UPGRADE
 /public/upgrade/*
 !/public/upgrade/.gitignore
@@ -52,4 +48,10 @@
 ### DEBUG
 /public/debug.log
 
-
+## APPLICATION
+### Assets
+/resources/assets/manifest.json
+/public/assets
+### Config
+/wp-config.local.php
+/wp-config.*.local.php

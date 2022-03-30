@@ -1,0 +1,13 @@
+@import "variables";
+@import "font/typography";
+
+body {
+  background-color: green;
+  background-image: url("../img/bkg.jpg");
+}
+
+h1 {
+  font-family: fontFamily(serif), serif;
+  font-size: 3em;
+  color: white;
+}
