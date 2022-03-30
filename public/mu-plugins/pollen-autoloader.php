@@ -1,8 +1,15 @@
 <?php
 
-use Pollen\WpKernel\WpApplicationInterface;
+declare(strict_types=1);
 
-if(function_exists('app') && ($app = app()) && $app instanceof WpApplicationInterface) {
-    $app->build();
+use Pollen\WpKernel\WpApplication;
+
+if (! class_exists(WpApplication::class)) {
+    return;
 }
 
+add_action('muplugins_loaded', function () {
+    if ($app = WpApplication::getInstance()) {
+        $app->build();
+    }
+}, 0);

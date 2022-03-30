@@ -1,0 +1,82 @@
+@use "sass:map";
+@use "sass:string";
+
+// PATHS
+// .sample {
+//   background-image: url("#{$img-path-url}/sample.png");
+// }
+$root-path-url: "../" !default;
+$img-path-url: "#{$root-path-url}/img" !default;
+$font-path-url: "#{$root-path-url}/font" !default;
+
+// FONT FAMILY
+// @see https://developer.mozilla.org/fr/docs/Web/CSS/font-family
+$font-family: (
+    serif : "'Fira Sans', Times, 'Times New Roman', Georgia, serif",
+    sans-serif: "Verdana, Arial, Helvetica",
+    monospace: "'Lucida Console', Courier, monospace"
+) !default;
+
+// > Font Family helper
+// .sample {
+//  font-family: fontFamily(serif), serif;
+// }
+@function fontFamily($alias) {
+  @return string.unquote(map.get($font-family, $alias));
+}
+
+// FONT WEIGHT
+$font-weight: (
+    thin: 100,
+    extra-light: 200,
+    light: 300,
+    regular: 400,
+    medium:500,
+    semi-bold: 600,
+    bold: 700,
+    extra-bold: 800,
+    black: 900
+) !default;
+
+// > Font Weight helper
+// .sample {
+//  font-weight: fontWeight(extra-light);
+// }
+@function fontWeight($alias) {
+  @return map.get($font-weight, $alias);
+}
+
+// COLORS
+$colors: (
+  // COMMON
+    "transparent": transparent,
+    "black": #000000,
+    "white": #FFFFFF,
+    "error": #CC0000,
+    "info": #3498DB,
+    "success": #1ABC9C,
+    "warning": #F1C40F,
+    "facebook":#364F88,
+    "instagram": #833AB4,
+    "linkedin": #2867B2,
+    "twitter":#3ACAFF,
+    "vimeo":#17B3E8,
+    "youtube": #FF0000,
+    // THEME
+    "regular": #2F363E,
+    "primary": #E04F65,
+    "light": #EFEFEF,
+    "medium": #CACACA,
+    "dark": #2F363E,
+) !default;
+
+// > Color helper
+// .sample {
+//  color: color(regular);
+// }
+@function color($alias) {
+  @if type-of($alias) != string {
+    $alias: "#{$alias}";
+  }
+  @return map.get($colors, $alias);
+}

@@ -1,4 +1,37 @@
 #!/usr/bin/env php
 <?php
 
-require_once dirname(__DIR__) . '/vendor/bin/pollen-console';
+use Pollen\Console\Console;
+use Pollen\Console\ConsoleInterface;
+
+$DS = DIRECTORY_SEPARATOR;
+$basePath = getcwd();
+
+$autoloadPath = $basePath . "/vendor/autoload.php";
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+}
+
+$appPath = $basePath . "/bootstrap/app.php";
+if (file_exists($appPath)) {
+    $app = require $appPath;
+}
+
+require_once(ABSPATH . 'wp-settings.php');
+
+if (isset($app)) {
+    $app->build();
+
+    $console = $app->resolve(ConsoleInterface::class) ?: new Console();
+} else {
+    $console = new Console();
+}
+
+try {
+    $status = $console->run();
+} catch (Exception $e) {
+    $status = $e->getCode();
+    trigger_error($e->getMessage());
+}
+
+exit($status);
