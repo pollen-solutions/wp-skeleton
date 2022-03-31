@@ -23,15 +23,12 @@ if [ "$MACHINE" == "UNKNOWN" ]; then
 fi
 
 # Source the ".env" file if it is available...
-if [ -f ./docker/conf/.user.env ]; then
-  ./docker/conf/.user.env
-fi
 if [ -f ./.env ]; then
-  source ./.env
+  source ./.env 2> /dev/null
 fi
 
 # Define environment variables...
-export APP_PROJECT=${APP_PROJECT:-"docker-prototype"}
+export APP_PROJECT=${APP_PROJECT:-"wordpress-skeleton"}
 export LOCAL_UID=${LOCAL_UID:-$(id -u)}
 export LOCAL_USER=${LOCAL_USER:-$(id -un)}
 
@@ -54,7 +51,7 @@ if [ -z "$SKIP_CHECKS" ]; then
   fi
 
   # Determine if is currently up...
-  PSRESULT="$(docker-compose ps -q)"
+  PSRESULT="$(dc ps -q)"
   if docker-compose ps | grep "$APP_PROJECT" | grep 'Exit'; then
     echo -e "${WHITE}Shutting down old processes...${NC}" >&2
 
@@ -74,7 +71,7 @@ if [ $# -gt 0 ]; then
   # Installing project
   if [ "$1" == "install" ]; then
     shift 1
-    dc build --no-cache \
+    dc build \
       && dc up -d --remove-orphans
 
   # Uninstalling project
@@ -142,7 +139,8 @@ if [ $# -gt 0 ]; then
   elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     shift 1
     if [ "$EXEC" == "yes" ]; then
-      dc exec "${@:-php}" bash
+      dc run --rm "${@:-php}" /bin/bash
+      #dc exec "${@:-php}" bash
     else
       not_running
     fi
@@ -151,10 +149,11 @@ if [ $# -gt 0 ]; then
   elif [ "$1" == "ips" ]; then
     shift 1
     if [ "$EXEC" == "yes" ]; then
-      docker inspect -f '{{.Name}}%tab%{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
+      docker inspect -f '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
         $(dc ps -aq) |
-        sed 's#%tab%#\t\t#g' |
+        column -t |
         sed 's#/##g' |
+        #sed 's#%tab%#\t#g' |
         sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n
     else
       not_running
@@ -200,7 +199,7 @@ if [ $# -gt 0 ]; then
   elif [ "$1" == "npm" ]; then
     shift 1
     if [ "$EXEC" == "yes" ]; then
-      dc run --rm node npm "${@:-help}"
+      dc run -p 3000:3000 --rm node npm "${@:-help}"
     else
       not_running
     fi
