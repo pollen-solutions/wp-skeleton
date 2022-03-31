@@ -1,0 +1,50 @@
+version: '3.6'
+
+services:
+  php:
+    build:
+      args:
+        USER_NAME: ${LOCAL_USER}
+        USER_UID: ${LOCAL_UID}
+      context: .
+      dockerfile: docker/images/php/Dockerfile
+    command: bash -c "composer install && php -S 0.0.0.0:8000 -t public"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${APP_PROJECT}
+      MYSQL_USER: ${APP_PROJECT}
+      MYSQL_PASSWORD: ${APP_PROJECT}
+    volumes:
+      - ./:/var/www/html/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${APP_PROJECT}
+      MYSQL_USER: ${APP_PROJECT}
+      MYSQL_PASSWORD: ${APP_PROJECT}
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+
+  node:
+    build:
+      args:
+        USER_NAME: ${LOCAL_USER}
+        USER_UID: ${LOCAL_UID}
+      context: .
+      dockerfile: docker/images/node/Dockerfile
+    volumes:
+      - ./:/usr/src/app
+
+  smtp:
+    image: "mailhog/mailhog"
