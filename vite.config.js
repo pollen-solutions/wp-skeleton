@@ -14,52 +14,52 @@ const projectRootDir = resolve(__dirname)
 const vitePollenServe = ({manifestName = 'manifest'} = {}) => {
   let config, root, base
 
+  const resolveHostname = (optionsHost) => {
+    let host
+
+    if (optionsHost === undefined ||
+        optionsHost === false ||
+        optionsHost === 'localhost') {
+      // Use a secure default
+      host = '127.0.0.1'
+    } else if (optionsHost === true) {
+      // If passed --host in the CLI without arguments
+      host = undefined // undefined typically means 0.0.0.0 or :: (listen on all IPs)
+    } else {
+      host = optionsHost
+    }
+    // Set host name to localhost when possible, unless the user explicitly asked for '127.0.0.1'
+    const name = (optionsHost !== '127.0.0.1' && host === '127.0.0.1') ||
+    host === '0.0.0.0' ||
+    host === '::' ||
+    host === undefined ? 'localhost' : host
+
+    return {host, name}
+  }
+
+  const normalizePath = (path) => {
+    if (root !== '/' && path.startsWith(root)) {
+      path = path.slice(root.length)
+
+      if (path[0] !== '/') {
+        path = `/${path}`
+      }
+    }
+
+    if (path.startsWith(base)) {
+      path = path.slice(base.length)
+    }
+
+    if (path[0] === '/') {
+      path = path.slice(1)
+    }
+
+    return path
+  }
+
   return {
     name: 'pollen-serve',
     apply: 'serve',
-
-    _resolveHostname(optionsHost) {
-      let host
-
-      if (optionsHost === undefined ||
-          optionsHost === false ||
-          optionsHost === 'localhost') {
-        // Use a secure default
-        host = '127.0.0.1'
-      } else if (optionsHost === true) {
-        // If passed --host in the CLI without arguments
-        host = undefined // undefined typically means 0.0.0.0 or :: (listen on all IPs)
-      } else {
-        host = optionsHost
-      }
-      // Set host name to localhost when possible, unless the user explicitly asked for '127.0.0.1'
-      const name = (optionsHost !== '127.0.0.1' && host === '127.0.0.1') ||
-      host === '0.0.0.0' ||
-      host === '::' ||
-      host === undefined ? 'localhost' : host
-
-      return {host, name}
-    },
-
-    _normalizePath(path) {
-      if (root !== '/' && path.startsWith(root)) {
-        path = path.slice(root.length)
-
-        if (path[0] !== '/') {
-          path = `/${path}`
-        }
-      }
-
-      if (path.startsWith(base)) {
-        path = path.slice(base.length)
-      }
-
-      if (path[0] === '/') {
-        path = path.slice(1)
-      }
-
-      return path
-    },
 
     configResolved(ResolvedConfig) {
       config = ResolvedConfig
@@ -84,12 +84,19 @@ const vitePollenServe = ({manifestName = 'manifest'} = {}) => {
 
       httpServer?.once('listening', () => {
         const protocol = config.server.https ? 'https' : 'http',
-            hostname = this._resolveHostname(config.server.host || 'localhost'),
+            hostname = resolveHostname(config.server.host || 'localhost'),
             port = config.server.port,
             url = {local: '', network: []}
 
-        if (process.env.APP_URL !== undefined) {
-          const appUrl = new URL(process.env.APP_URL || null)
+        let APP_URL = undefined
+        if (process.env.SITEURL !== undefined) {
+          APP_URL = process.env.SITEURL
+        } else if (process.env.APP_URL !== undefined) {
+          APP_URL = process.env.APP_URL
+        }
+
+        if (APP_URL !== undefined) {
+          const appUrl = new URL(APP_URL || null)
           config.server.origin = `${appUrl.protocol}//${appUrl.hostname}:3000`
         }
 
@@ -127,14 +134,14 @@ const vitePollenServe = ({manifestName = 'manifest'} = {}) => {
         const inputOptions = config.build.rollupOptions?.input ?? {}
 
         if (typeof inputOptions === 'string') {
-          manifest.inputs['main'] = this._normalizePath(inputOptions)
+          manifest.inputs['main'] = normalizePath(inputOptions)
         } else if (Array.isArray(inputOptions)) {
           for (const name of inputOptions) {
-            manifest.inputs[name] = this._normalizePath(name)
+            manifest.inputs[name] = normalizePath(name)
           }
         } else {
           for (const [name, path] of Object.entries(inputOptions)) {
-            manifest.inputs[name] = this._normalizePath(path)
+            manifest.inputs[name] = normalizePath(path)
           }
         }
 
@@ -158,29 +165,32 @@ export default defineConfig(({command, mode}) => {
     plugins: [
       Inspect(),
       vitePollenServe(),
-      viteImagemin(),
+      viteImagemin({
+        svgo: false
+      }),
       viteStaticCopy({
         targets: [
           {
             src: 'static',
-            dest: '/'
+            dest: 'assets'
           }
         ]
       }),
     ],
     root: './resources/assets',
-    base: command === 'serve' ? './' : '/assets/',
+    base: command === 'serve' ? './' : './',
     server: {
       host: '0.0.0.0',
       port: 3000,
       watch: {
         disableGlobbing: false,
-      }
+      },
     },
     build: {
       manifest: true,
-      assetsDir: '',
-      outDir: '../../public/assets/',
+      assetsDir: 'assets',
+      outDir: '../../public',
+      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: undefined
@@ -189,8 +199,7 @@ export default defineConfig(({command, mode}) => {
           'app': './resources/assets/app.js'
         }
       },
-      minify: false,//'esbuild',
-      emptyOutDir: true
+      minify: 'esbuild'
     }
   }
 })
