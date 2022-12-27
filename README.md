@@ -140,7 +140,9 @@ Visit the application in the browser:
 
 - [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## Environment configuration
+## Configuration
+
+### Environment configuration
 
 During the installation process, the file ```.env.example``` is copied to ```.env```.
 This file contains all required default configuration.
@@ -205,12 +207,6 @@ REDIS_HOST=127.0.0.1
 ```
 
 ### wp.config.local
-
-============
-@todo
-============
-
-## Configuration
 
 ============
 @todo
