@@ -52,6 +52,8 @@ package-lock.json
 ### Assets
 /resources/assets/manifest.json
 /public/assets
+/public/manifest.json
+
 ### Config
 /wp-config.local.php
 /wp-config.*.local.php
