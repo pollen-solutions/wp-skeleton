@@ -8,10 +8,10 @@
 
 ## Table of contents
 
-- [Directory structure](#Directory structure)
-- [Features](#Features)
-- [Installation](#Installation)
-- [Configuration](#Configuration)
+- [Directory structure](#directory-structure)
+- [Features](#features)
+- [Installation](#installation)
+- [Configuration](#configuration)
 
 ## Directory structure
 
