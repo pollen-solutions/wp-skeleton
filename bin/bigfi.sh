@@ -30,6 +30,7 @@ fi
 # Define environment variables...
 export APP_PROJECT=${APP_PROJECT:-"wordpress-skeleton"}
 export LOCAL_UID=${LOCAL_UID:-$(id -u)}
+export LOCAL_GID=${LOCAL_UID:-$(id -g)}
 export LOCAL_USER=${LOCAL_USER:-$(id -un)}
 
 # Function that outputs is not running...
@@ -140,7 +141,6 @@ if [ $# -gt 0 ]; then
     shift 1
     if [ "$EXEC" == "yes" ]; then
       dc run --rm "${@:-php}" /bin/bash
-      #dc exec "${@:-php}" bash
     else
       not_running
     fi
@@ -153,7 +153,6 @@ if [ $# -gt 0 ]; then
         $(dc ps -aq) |
         column -t |
         sed 's#/##g' |
-        #sed 's#%tab%#\t#g' |
         sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n
     else
       not_running

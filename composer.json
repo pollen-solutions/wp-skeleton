@@ -9,7 +9,7 @@
   ],
   "type": "project",
   "license": "MIT",
-  "time": "2022-10-14",
+  "time": "2022-12-26",
   "authors": [
     {
       "name": "Jordy Manner",
@@ -26,7 +26,7 @@
     "php": "^7.4 || ^8.0",
     "ext-json": "*",
     "composer/installers": "^1.12",
-    "johnpbloch/wordpress-core": "^6.0",
+    "johnpbloch/wordpress-core": "^6.1",
     "johnpbloch/wordpress-core-installer": "^2.0",
     "pollen-solutions/asset": "^1.0",
     "pollen-solutions/console": "^1.0",
@@ -34,7 +34,7 @@
     "pollen-solutions/log": "^1.0",
     "pollen-solutions/view-extends": "^1.0",
     "pollen-solutions/wp-kernel": "^1.0",
-    "wpackagist-theme/twentytwentytwo": "^1.1"
+    "wpackagist-theme/twentytwentythree": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5",
