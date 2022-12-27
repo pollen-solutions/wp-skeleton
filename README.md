@@ -19,6 +19,7 @@
 
 ```
 |–– bin
+|–– bootstrap
 |–– config
 |–– docker
 |–– docs
@@ -51,7 +52,7 @@ The ```src``` directory contains the core PHP code of your application.
 #### resources
 
 The ```resources``` directory contains the templating code. This included views and css, js, fonts, images and all other
-assets files ...
+assets files.
 
 #### public
 
@@ -74,18 +75,11 @@ The ```docs``` directory contains the complete documentation of the micro framew
 @todo
 ============
 
-- Providers
-- App.php
-
 #### The Templating directory structure (resources)
 
 ============
 @todo
 ============
-
-- assets
-- views
-
 
 ## Features
 
@@ -95,9 +89,56 @@ The ```docs``` directory contains the complete documentation of the micro framew
 
 ## Installation
 
+### Classic installation
+
+#### Prerequisite
+
+- PHP must be installed on your machine [see details](https://www.php.net/manual/install.php).
+- Composer must be installed on your machine [see details](https://getcomposer.org/download/).
+
+#### Launch installation
+
 ```sh
-composer create-project pollen-solutions/wp-skeleton project_name
+composer create-project pollen-solutions/wp-skeleton your-app-name
 ```
+
+#### Serve the app
+
+Serve your application using
+the [built-in web server in PHP](https://www.php.net/manual/en/features.commandline.webserver.php) (or your server of
+choice) from the ```public``` directory:
+
+```sh
+php -S 127.0.0.1:8000 -t public
+```
+
+Visit the application in the browser:
+
+- [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### Docker installation
+
+#### Prerequisite
+
+- Docker must be installed on your machine [see details](https://docs.docker.com/get-docker/)
+
+#### Launch installation
+
+Clone projet from repo
+
+```sh
+git clone git@github.com:pollen-solutions/wp-skeleton.git
+```
+
+Launch application builder
+
+```sh
+bin/app.build
+```
+
+Visit the application in the browser:
+
+- [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## Environment configuration
 
@@ -121,8 +162,32 @@ DB_PASSWORD=
 DB_PREFIX=wp_
 ```
 
-You can directly edit this file, but the best practice is to create a new ```.env.local``` file that will contain all of
-the configuration attributes specific to your installation.
+### .env syntax
+
+```dotenv
+STRING_VAR=string
+QUOTES_VAR="quoted variable"
+EMPTY_STRING=
+BOOL_VAR=true
+NULL_VAR=null
+```
+
+You can use another global or previously defined environment variable like this :
+
+```dotenv
+DB_USERNAME=root
+DB_PASSWORD=${DB_USER}
+```
+
+Note that, for security reasons, global environnement variables couldn't be overridden. 
+
+Pollen solutions suite uses the **vlucas/phpdotenv** library to work. More information
+on its [github repository](https://github.com/vlucas/phpdotenv).
+
+### .env.local
+
+You can directly edit the ```.env``` file, but the best practice is to create a new ```.env.local``` file that will 
+contain all the configuration attributes specific to your installation.
 
 Through the ```.env.local``` file you can if necessary override an environment value declared in the ```.env``` file or
 define new ones :
@@ -139,51 +204,11 @@ REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 ```
 
-### .env syntax
-
-```dotenv
-STRING_VAR=string
-QUOTES_VAR="quoted variable"
-EMPTY_STRING=
-BOOL_VAR=true
-NULL_VAR=null
-```
-
-You can use another previously defined environment variable like this :
-
-```dotenv
-DB_USERNAME=root
-DB_PASSWORD=${DB_USER}
-```
-
-Pollen solutions suite uses the **vlucas/phpdotenv** library to work. More information
-on its [github repository](https://github.com/vlucas/phpdotenv).
-
-### .env.local
-
-============
-@todo
-============
-
 ### wp.config.local
 
 ============
 @todo
 ============
-
-### Serve the app
-
-Serve your application using
-the [built-in web server in PHP](https://www.php.net/manual/en/features.commandline.webserver.php) (or your server of
-choice) from the ```public``` directory:
-
-```shell
-php -S 127.0.0.1:8000 -t public
-```
-
-Visit the application in the browser:
-
-- [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## Configuration
 

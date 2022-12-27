@@ -8,6 +8,7 @@ fi
 UNAMEOUT="$(uname -s)"
 
 WHITE='\033[1;37m'
+BOLD='\033[1m'
 NC='\033[0m'
 
 # Verify operating system is supported.
@@ -22,16 +23,16 @@ if [ "$MACHINE" == "UNKNOWN" ]; then
   exit 1
 fi
 
-# Source the ".env" file if it is available...
-if [ -f ./.env ]; then
-  source ./.env 2> /dev/null
+# Source the ".project.env" file if it is available...
+if [ -f ./docker/conf/.project.env ]; then
+  source ./docker/conf/.project.env 2> /dev/null
 fi
 
 # Define environment variables...
-export APP_PROJECT=${APP_PROJECT:-"wordpress-skeleton"}
+export PROJECT_NAME=${PROJECT_NAME:-"wordpress"}
+export LOCAL_USERNAME=${LOCAL_USERNAME:-$(id -un)}
 export LOCAL_UID=${LOCAL_UID:-$(id -u)}
 export LOCAL_GID=${LOCAL_UID:-$(id -g)}
-export LOCAL_USER=${LOCAL_USER:-$(id -un)}
 
 # Function that outputs is not running...
 function not_running {
@@ -41,7 +42,7 @@ function not_running {
 
 # docker-compose function shortcut
 function dc() {
-  docker-compose -p "$APP_PROJECT" "$@"
+  docker-compose -p "$PROJECT_NAME" "$@"
 }
 
 if [ -z "$SKIP_CHECKS" ]; then
@@ -53,7 +54,7 @@ if [ -z "$SKIP_CHECKS" ]; then
 
   # Determine if is currently up...
   PSRESULT="$(dc ps -q)"
-  if docker-compose ps | grep "$APP_PROJECT" | grep 'Exit'; then
+  if docker-compose ps | grep "$PROJECT_NAME" | grep 'Exit'; then
     echo -e "${WHITE}Shutting down old processes...${NC}" >&2
 
     docker-compose down >/dev/null 2>&1
@@ -237,6 +238,11 @@ if [ $# -gt 0 ]; then
     else
       echo "$1=${!1}"
     fi
+
+  elif [ "$1" == "info" ]; then
+    shift 1
+    echo "Visit the application in the browser:"
+    echo -e '\e]8;;http://127.0.0.1:8000\ahttp://127.0.0.1:8000\e]8;;\a'
 
   # Pass unknown commands to the "docker-compose" binary...
   else

@@ -6,8 +6,8 @@
 //   background-image: url("#{$img-path-url}/sample.png");
 // }
 $root-path-url: "../" !default;
-$img-path-url: "#{$root-path-url}/img" !default;
-$font-path-url: "#{$root-path-url}/font" !default;
+$img-path-url: "#{$root-path-url}img" !default;
+$font-path-url: "#{$root-path-url}font" !default;
 
 // FONT FAMILY
 // @see https://developer.mozilla.org/fr/docs/Web/CSS/font-family

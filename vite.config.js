@@ -1,12 +1,12 @@
 import {defineConfig} from 'vite'
 import {resolve} from 'path'
 import {writeFileSync} from 'fs'
+import { rm } from 'node:fs/promises'
 require('dotenv-flow').config()
 import 'url'
 // Plugins
 import Inspect from 'vite-plugin-inspect'
 import viteImagemin from 'vite-plugin-imagemin'
-import {viteStaticCopy} from 'vite-plugin-static-copy'
 
 const os = require('os')
 const projectRootDir = resolve(__dirname)
@@ -89,9 +89,7 @@ const vitePollenServe = ({manifestName = 'manifest'} = {}) => {
             url = {local: '', network: []}
 
         let APP_URL = undefined
-        if (process.env.SITEURL !== undefined) {
-          APP_URL = process.env.SITEURL
-        } else if (process.env.APP_URL !== undefined) {
+        if (process.env.APP_URL !== undefined) {
           APP_URL = process.env.APP_URL
         }
 
@@ -151,7 +149,15 @@ const vitePollenServe = ({manifestName = 'manifest'} = {}) => {
   }
 }
 
-export default defineConfig(({command, mode}) => {
+const isServe = (env) => {
+  return env.command === 'serve'
+}
+
+const inDev = (env) => {
+  return env.command === 'serve' || env.mode === 'watch'
+}
+
+export default defineConfig(env => {
   return {
     resolve: {
       alias: [
@@ -168,17 +174,15 @@ export default defineConfig(({command, mode}) => {
       viteImagemin({
         svgo: false
       }),
-      viteStaticCopy({
-        targets: [
-          {
-            src: 'static',
-            dest: 'assets'
-          }
-        ]
-      }),
+      {
+        name: "Cleaning assets folder",
+        async buildStart() {
+          await rm('public/assets', { recursive: true, force: true });
+        }
+      }
     ],
     root: './resources/assets',
-    base: command === 'serve' ? './' : './',
+    base: isServe(env) ? './' : './',
     server: {
       host: '0.0.0.0',
       port: 3000,
@@ -190,7 +194,7 @@ export default defineConfig(({command, mode}) => {
       manifest: true,
       assetsDir: 'assets',
       outDir: '../../public',
-      sourcemap: true,
+      sourcemap: inDev(env),
       rollupOptions: {
         output: {
           manualChunks: undefined
@@ -199,7 +203,10 @@ export default defineConfig(({command, mode}) => {
           'app': './resources/assets/app.js'
         }
       },
-      minify: 'esbuild'
+      minify: inDev(env) ? false : 'esbuild'
+    },
+    css: {
+      devSourcemap: true
     }
   }
 })

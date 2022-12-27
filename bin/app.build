@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+docker info > /dev/null 2>&1
+
+# Ensure that Docker is running...
+if [ $? -ne 0 ]; then
+    echo "Docker is not running."
+
+    exit 1
+fi
+
+cp docker/conf/.env.example .env
+
+bin/bigfish install
+
+bin/bigfish composer install
+
+bin/bigfish php vendor/bin/wp-salt >> .env
+
+BOLD='\033[1m'
+NC='\033[0m'
+
+echo ""
+echo -e "${BOLD}Congratulations, your app is now installed !${NC}"
+echo ""
+
+bin/bigfish info

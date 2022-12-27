@@ -4,15 +4,15 @@ services:
   php:
     build:
       args:
-        USER_NAME: ${LOCAL_USER}
+        USER_NAME: ${LOCAL_USERNAME}
         USER_UID: ${LOCAL_UID}
       context: .
       dockerfile: docker/images/php/Dockerfile
     environment:
       MYSQL_HOST: mysql
-      MYSQL_DATABASE: ${APP_PROJECT}
-      MYSQL_USER: ${APP_PROJECT}
-      MYSQL_PASSWORD: ${APP_PROJECT}
+      MYSQL_DATABASE: ${PROJECT_NAME}
+      MYSQL_USER: ${PROJECT_NAME}
+      MYSQL_PASSWORD: ${PROJECT_NAME}
     volumes:
       - ./:/var/www/html/
     ports:
@@ -25,9 +25,9 @@ services:
     command: mysqld --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${APP_PROJECT}
-      MYSQL_USER: ${APP_PROJECT}
-      MYSQL_PASSWORD: ${APP_PROJECT}
+      MYSQL_DATABASE: ${PROJECT_NAME}
+      MYSQL_USER: ${PROJECT_NAME}
+      MYSQL_PASSWORD: ${PROJECT_NAME}
 
   phpmyadmin:
     image: phpmyadmin
@@ -38,7 +38,7 @@ services:
   node:
     build:
       args:
-        USER_NAME: ${LOCAL_USER}
+        USER_NAME: ${LOCAL_USERNAME}
         USER_UID: ${LOCAL_UID}
       context: .
       dockerfile: docker/images/node/Dockerfile
