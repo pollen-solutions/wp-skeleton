@@ -151,6 +151,23 @@ DB_PASSWORD=${MYSQL_PASSWORD}
 
 Note that, for security reasons, global environnement variables couldn't be overridden.
 
+### .env merge vars
+
+In some special cases, you may need to access application data to complete the
+configuration of your environment variables and the merge vars could help you.
+
+The paths of the application are natively available :
+
+- ```%%app.base_dir%%```: Absolute path to the root directory of the app.
+
+- ```%%app.public_dir%%```: Absolute path to the public directory of the app.
+
+Example of usage :
+
+```dotenv
+DATABASE_URL=sqlite:///%%app.base_dir%%/var/database.sqlite
+```
+
 Pollen solutions suite uses the **vlucas/phpdotenv** library to work. More information
 on its [github repository](https://github.com/vlucas/phpdotenv).
 
