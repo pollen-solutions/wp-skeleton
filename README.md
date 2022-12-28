@@ -89,6 +89,8 @@ Visit the application in the browser:
 
 - [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+Retrieve [More details about docker usage](docs/Docker.md) in a Pollen application from the built-in documentation.
+
 ## Configuration
 
 ### Environment configuration

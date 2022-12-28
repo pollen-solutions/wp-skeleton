@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 
-if ! [ -x "$(command -v docker-compose)" ]; then
-  shopt -s expand_aliases
-  alias docker-compose='docker compose'
-fi
-
 UNAMEOUT="$(uname -s)"
-
-WHITE='\033[1;37m'
-BOLD='\033[1m'
-NC='\033[0m'
 
 # Verify operating system is supported.
 case "${UNAMEOUT}" in
@@ -23,9 +14,105 @@ if [ "$MACHINE" == "UNKNOWN" ]; then
   exit 1
 fi
 
+# Determine if stdout is a terminal...
+if test -t 1; then
+  # Determine if colors are supported...
+  ncolors=$(tput colors)
+
+  if test -n "$ncolors" && test "$ncolors" -ge 8; then
+    BOLD="$(tput bold)"
+    WHITE="$(tput setaf 7)"
+    YELLOW="$(tput setaf 3)"
+    GREEN="$(tput setaf 2)"
+    NC="$(tput sgr0)"
+  fi
+fi
+
+BINARY=bin/bigfish
+
+# Function that prints the available commands...
+function display_help {
+  echo "Pollen Solutions Bigfish"
+  echo
+  echo "${YELLOW}Usage:${NC}" >&2
+  echo " ${BINARY} COMMAND [options] [arguments]"
+  echo
+  echo "Unknown commands are passed to the docker-compose binary."
+  echo
+  echo "${YELLOW}Docker Compose Commands:${NC}"
+  echo "  ${GREEN}${BINARY} install${NC}   Install the application"
+  echo "  ${GREEN}${BINARY} uninstall${NC} Uninstall the application"
+  echo "  ${GREEN}${BINARY} reinstall${NC} Reinstall the application"
+  echo "  ${GREEN}${BINARY} build${NC}     Build the docker application image"
+  echo "  ${GREEN}${BINARY} up${NC}        Restart the application"
+  echo "  ${GREEN}${BINARY} up -d${NC}     Restart the application in the background"
+  echo "  ${GREEN}${BINARY} flush${NC}     Remove orphans containers and restart the application"
+  echo "  ${GREEN}${BINARY} flush -d${NC}  Remove orphans containers and restart the application in the background"
+  echo "  ${GREEN}${BINARY} stop${NC}      Stop the application"
+  echo "  ${GREEN}${BINARY} ps${NC}        Display the status of all containers"
+  echo "  ${GREEN}${BINARY} logs${NC}      Display the logs of all containers"
+  echo "  ${GREEN}${BINARY} logs -f${NC}   Display the logs output of all containers and follow changes"
+  echo "  ${GREEN}${BINARY} ips${NC}       Show the ips of all containers"
+  echo
+  echo "${YELLOW}Apache Commands:${NC}"
+  echo "  ${GREEN}${BINARY} apache${NC}    Run an Apache command"
+  echo
+  echo "${YELLOW}MySQL Commands:${NC}"
+  echo "  ${GREEN}${BINARY} mysql${NC}     Start a MySQL CLI session within the 'mysql' container"
+  echo
+  echo "${YELLOW}PHP Commands:${NC}"
+  echo "  ${GREEN}${BINARY} php${NC}       Run a snippet of PHP code"
+  echo
+  echo "${YELLOW}Composer Commands:${NC}"
+  echo "  ${GREEN}${BINARY} composer${NC}  Run a Composer command"
+  echo
+  echo "${YELLOW}SMTP Commands:${NC}"
+  echo "  ${GREEN}${BINARY} smtp${NC}      Run an MailHog command"
+  echo "  ${GREEN}${BINARY} mail${NC}      Send a test mail"
+  echo
+  echo "${YELLOW}Node Commands:${NC}"
+  echo "  ${GREEN}${BINARY} node${NC}      Run a Node command"
+  echo
+  echo "${YELLOW}NPM Commands:${NC}"
+  echo "  ${GREEN}${BINARY} npm${NC}       Run a npm command"
+  echo "  ${GREEN}${BINARY} npx${NC}       Run a npx command"
+  echo
+  echo "${YELLOW}Yarn Commands:${NC}"
+  echo "  ${GREEN}${BINARY} yarn${NC}      Run a Yarn command"
+  echo
+  echo "${YELLOW}Application Console Commands:${NC}"
+  echo "  ${GREEN}${BINARY} console${NC}   Run a console of application command"
+  echo
+  echo "${YELLOW}Container CLI:${NC}"
+  echo "  ${GREEN}${BINARY} shell${NC}     Start a shell session within the application container"
+  echo "  ${GREEN}${BINARY} bash${NC}      Alias for shell command"
+  echo
+  echo "${YELLOW}Environment variables Commands:${NC}"
+  echo "  ${GREEN}${BINARY} env${NC}       Show all environment variables or one of existing if specified"
+
+  exit 1
+}
+
+# Proxy the "help" command...
+if [ $# -gt 0 ]; then
+  if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
+    display_help
+  fi
+else
+  display_help
+fi
+
 # Source the ".project.env" file if it is available...
 if [ -f ./docker/conf/.project.env ]; then
-  source ./docker/conf/.project.env 2> /dev/null
+  source ./docker/conf/.project.env 2>/dev/null
+fi
+
+if [ -f .env ]; then
+  source .env 2>/dev/null
+fi
+
+if [ -f .env.local ]; then
+  source .env.local 2>/dev/null
 fi
 
 # Define environment variables...
@@ -42,7 +129,7 @@ function not_running {
 
 # docker-compose function shortcut
 function dc() {
-  docker-compose "$@"
+  docker-compose -p "$PROJECT_NAME" "$@"
 }
 
 if [ -z "$SKIP_CHECKS" ]; then
@@ -54,10 +141,10 @@ if [ -z "$SKIP_CHECKS" ]; then
 
   # Determine if is currently up...
   PSRESULT="$(dc ps -q)"
-  if docker-compose ps "$PROJECT_NAME" 2>&1 | grep 'Exit\|exited'; then
+  if dc ps "$PROJECT_NAME" 2>&1 | grep 'Exit\|exited'; then
     echo -e "${WHITE}Shutting down old processes...${NC}" >&2
 
-    docker-compose down >/dev/null 2>&1
+    dc down >/dev/null 2>&1
 
     EXEC="no"
   elif [ -n "$PSRESULT" ]; then
@@ -69,185 +156,181 @@ else
   EXEC="yes"
 fi
 
-if [ $# -gt 0 ]; then
-  # Installing project
-  if [ "$1" == "install" ]; then
-    shift 1
-    dc build \
-      && dc up -d --remove-orphans
+# Installing project
+if [ "$1" == "install" ]; then
+  shift 1
+  dc build &&
+    dc up -d --remove-orphans
 
-  # Uninstalling project
-  elif [ "$1" == "uninstall" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc down --remove-orphans -v
-    else
-      not_running
-    fi
-
-  # Reinstalling project
-  elif [ "$1" == "reinstall" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc down --remove-orphans -v \
-        && dc build --no-cache \
-        && dc up -d --remove-orphans
-    else
-      not_running
-    fi
-
-  # Builds docker images
-  elif [ "$1" == "build" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc build --no-cache "$@"
-    else
-      not_running
-    fi
-
-  # Starts all containers or a specific container if necessary
-  elif [ "$1" == "up" ]; then
-    shift 1
-    dc up -d --remove-orphans "$@"
-
-  # Stops all containers or a specific container
-  elif [ "$1" == "stop" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc stop "$@"
-    else
-      not_running
-    fi
-
-  # Lists all container statuses or for a specific container
-  elif [ "$1" == "ps" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc ps "$@"
-    else
-      not_running
-    fi
-
-  # Displays and follows all container logs or for a specific container
-  elif [ "$1" == "logs" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc logs -f "$@"
-    else
-      not_running
-    fi
-
-  # Opens a container shell
-  elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm "${@:-php}" /bin/bash
-    else
-      not_running
-    fi
-
-  # Displays container IPs
-  elif [ "$1" == "ips" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      docker inspect -f '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
-        $(dc ps -aq) |
-        column -t |
-        sed 's#/##g' |
-        sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n
-    else
-      not_running
-    fi
-
-  # Returns PHP command line help or launch a PHP specified command
-  elif [ "$1" == "php" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm php "${@:--h}"
-    else
-      not_running
-    fi
-
-  # Returns NodeJs command line help or launch a NodeJS specified command
-  elif [ "$1" == "node" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm node "${@:--h}"
-    else
-      not_running
-    fi
-
-  # Returns Mailhog command line help or launch a Mailhog specified command
-  elif [ "$1" == "smtp" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm smtp "${@:--h}"
-    else
-      not_running
-    fi
-
-  ## Returns Composer command line help or launch a Composer specified command
-  elif [ "$1" == "composer" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm php composer "${@:--h}"
-    else
-      not_running
-    fi
-
-  ## Returns NPM command line help or launch a NPM specified command
-  elif [ "$1" == "npm" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run -p 3000:3000 --rm node npm "${@:-help}"
-    else
-      not_running
-    fi
-
-  ## Returns NPX command line help or launch a NPX specified command
-  elif [ "$1" == "npx" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm node npx "${@:--h}"
-    else
-      not_running
-    fi
-
-  ## Returns YARN command line help or launch a YARN specified command
-  elif [ "$1" == "yarn" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm node yarn "${@:--h}"
-    else
-      not_running
-    fi
-
-  # Returns App Console command line or launch a App Console specified command
-  elif [ "$1" == "console" ]; then
-    shift 1
-    if [ "$EXEC" == "yes" ]; then
-      dc run --rm php php bin/console "${@:--v}"
-    else
-      not_running
-    fi
-
-  elif [ "$1" == "print" ]; then
-    shift 1
-    if [ -z "$1" ]; then
-      echo "ENV arg required"
-    else
-      echo "$1=${!1}"
-    fi
-
-  elif [ "$1" == "info" ]; then
-    shift 1
-    echo "Visit the application in the browser:"
-    echo -e '\e]8;;http://127.0.0.1:8000\ahttp://127.0.0.1:8000\e]8;;\a'
-
-  # Pass unknown commands to the "docker-compose" binary...
+# Uninstalling project
+elif [ "$1" == "uninstall" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc down --remove-orphans -v
   else
-    dc "$@"
+    not_running
   fi
+
+# Reinstalling project
+elif [ "$1" == "reinstall" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc down --remove-orphans -v &&
+      dc build --no-cache &&
+      dc up -d --remove-orphans
+  else
+    not_running
+  fi
+
+# Starts all containers or a specific container if necessary
+elif [ "$1" == "flush" ]; then
+  shift 1
+  dc up --remove-orphans "$@"
+
+# Displays container IPs
+elif [ "$1" == "ips" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    docker inspect -f '{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
+      $(dc ps -aq) |
+      column -t |
+      sed 's#/##g' |
+      sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n
+  else
+    not_running
+  fi
+
+# Opens a container shell
+elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm "${@:-php}" /bin/bash
+  else
+    not_running
+  fi
+
+# Returns PHP command line help or launch a PHP specified command
+elif [ "$1" == "apache" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm php "${@:--h}"
+  else
+    not_running
+  fi
+
+# Returns PHP command line help or launch a PHP specified command
+elif [ "$1" == "php" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm php php "${@:--h}"
+  else
+    not_running
+  fi
+
+# Returns PHP command line help or launch a PHP specified command
+elif [ "$1" == "mysql" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm mysql /bin/bash -c "mysql -u root -proot -h mysql"
+  else
+    not_running
+  fi
+
+# Returns NodeJs command line help or launch a NodeJS specified command
+elif [ "$1" == "node" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm node "${@:--h}"
+  else
+    not_running
+  fi
+
+# Returns Mailhog command line help or launch a Mailhog specified command
+elif [ "$1" == "smtp" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm smtp "${@:--h}"
+  else
+    not_running
+  fi
+
+elif [ "$1" == "mail" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm smtp sendmail --smtp-addr="smtp:1025" <<EOF
+From: Sender SampleName <from@example.com>
+To: Recipient SampleName <to@example.com>
+Subject: Hello World !
+
+Hey there,
+
+It's works good !
+
+Bye
+EOF
+  else
+    not_running
+  fi
+
+## Returns Composer command line help or launch a Composer specified command
+elif [ "$1" == "composer" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm php composer "${@:--h}"
+  else
+    not_running
+  fi
+
+## Returns NPM command line help or launch a NPM specified command
+elif [ "$1" == "npm" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run -p 3000:3000 --rm node npm "${@:-help}"
+  else
+    not_running
+  fi
+
+## Returns NPX command line help or launch a NPX specified command
+elif [ "$1" == "npx" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm node npx "${@:--h}"
+  else
+    not_running
+  fi
+
+## Returns YARN command line help or launch a YARN specified command
+elif [ "$1" == "yarn" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm node yarn "${@:--h}"
+  else
+    not_running
+  fi
+
+# Returns App Console command line or launch a App Console specified command
+elif [ "$1" == "console" ]; then
+  shift 1
+  if [ "$EXEC" == "yes" ]; then
+    dc run --rm php php bin/console "${@:--v}"
+  else
+    not_running
+  fi
+
+elif [ "$1" == "env" ]; then
+  shift 1
+  if [ -z "$1" ]; then
+    export
+  else
+    echo "$1=${!1:-null}"
+  fi
+
+elif [ "$1" == "info" ]; then
+  shift 1
+  echo "Visit the application in the browser:"
+  echo -e '\e]8;;http://127.0.0.1:8000\ahttp://127.0.0.1:8000\e]8;;\a'
+
+# Pass unknown commands to the "docker-compose" binary...
 else
-  dc ps
+  dc "$@"
 fi
