@@ -206,8 +206,6 @@ for creating a complete web application.
     |–– assets
     |–– views
 |–– src
-    |–– Providers
-    |–– App.php
 |–– tests
 |–– var
 |–– (vendor)
