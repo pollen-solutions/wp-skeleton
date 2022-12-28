@@ -33,7 +33,10 @@ services:
     image: phpmyadmin
     restart: always
     environment:
-      - PMA_ARBITRARY=1
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql
+      PMA_USER: ${PROJECT_NAME}
+      PMA_PASSWORD: ${PROJECT_NAME}
 
   node:
     build:
@@ -48,5 +51,5 @@ services:
   smtp:
     image: "mailhog/mailhog"
     environment:
-      - MH_API_BIND_ADDR=0.0.0.0:80
-      - MH_UI_BIND_ADDR=0.0.0.0:80
+      MH_API_BIND_ADDR: 0.0.0.0:80
+      MH_UI_BIND_ADDR: 0.0.0.0:80
