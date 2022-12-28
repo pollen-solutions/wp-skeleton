@@ -13,7 +13,7 @@ cp docker/conf/.env.example .env
 
 bin/bigfish install
 
-bin/bigfish composer install
+bin/bigfish composer install --prefer-dist --no-interaction
 
 bin/bigfish php vendor/bin/wp-salt >> .env
 
