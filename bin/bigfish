@@ -29,7 +29,7 @@ if [ -f ./docker/conf/.project.env ]; then
 fi
 
 # Define environment variables...
-export PROJECT_NAME=${PROJECT_NAME:-"wordpress"}
+export PROJECT_NAME=${PROJECT_NAME:-$(basename $(pwd))}
 export LOCAL_USERNAME=${LOCAL_USERNAME:-$(id -un)}
 export LOCAL_UID=${LOCAL_UID:-$(id -u)}
 export LOCAL_GID=${LOCAL_UID:-$(id -g)}
@@ -42,7 +42,7 @@ function not_running {
 
 # docker-compose function shortcut
 function dc() {
-  docker-compose -p "$PROJECT_NAME" "$@"
+  docker-compose "$@"
 }
 
 if [ -z "$SKIP_CHECKS" ]; then
@@ -54,7 +54,7 @@ if [ -z "$SKIP_CHECKS" ]; then
 
   # Determine if is currently up...
   PSRESULT="$(dc ps -q)"
-  if docker-compose ps | grep "$PROJECT_NAME" | grep 'Exit'; then
+  if docker-compose ps "$PROJECT_NAME" 2>&1 | grep 'Exit\|exited'; then
     echo -e "${WHITE}Shutting down old processes...${NC}" >&2
 
     docker-compose down >/dev/null 2>&1
