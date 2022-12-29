@@ -1,4 +1,4 @@
-version: '3.6'
+version: "3.8"
 
 services:
   php:
@@ -53,3 +53,11 @@ services:
     environment:
       MH_API_BIND_ADDR: 0.0.0.0:80
       MH_UI_BIND_ADDR: 0.0.0.0:80
+
+  expose:
+    build:
+      context: .
+      dockerfile: docker/images/expose/Dockerfile
+    init: true
+    depends_on:
+      - php

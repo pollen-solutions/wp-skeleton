@@ -28,11 +28,14 @@ if test -t 1; then
   fi
 fi
 
-BINARY=bin/bigfish
+BINARY=bigfish
 
 # Function that prints the available commands...
 function display_help {
-  echo "Pollen Solutions Bigfish"
+  echo "Pollen Solutions Bigfish CLI"
+  echo
+  echo "${YELLOW}Configuring a Shell alias for the terminal session (recommended)${NC}"
+  echo " alias bigfish='[ -f bigfish ] && bash bigfish || bash bin/bigfish'"
   echo
   echo "${YELLOW}Usage:${NC}" >&2
   echo " ${BINARY} COMMAND [options] [arguments]"
@@ -89,8 +92,39 @@ function display_help {
   echo
   echo "${YELLOW}Environment variables Commands:${NC}"
   echo "  ${GREEN}${BINARY} env${NC}       Show all environment variables or one of existing if specified"
+  echo
+  echo "${YELLOW}Sharing publicly:${NC}"
+  echo "  ${GREEN}${BINARY} share${NC}     Share the application publicly via a temporary URL"
+  echo
 
   exit 1
+}
+
+# Function that prints the available commands...
+function display_info {
+  appLocal=127.0.0.1:8000
+  appNetwork=$(service_ip php)
+  pmaNetwork=$(service_ip phpmyadmin)
+  smtpNetwork=$(service_ip smtp)
+
+  echo "Pollen Solutions Application informations"
+  echo
+  echo "${YELLOW}Browse application:${NC}"
+  echo "  ${GREEN}Local:${NC}              http://${appLocal}"
+  echo "  ${GREEN}Network:${NC}            http://${appNetwork}"
+  echo
+  echo "${YELLOW}PhpMyAdmin:${NC}"
+  echo "  ${GREEN}Network:${NC}            http://${pmaNetwork}"
+  echo
+  echo "${YELLOW}MailHog:${NC}"
+  echo "  ${GREEN}Network:${NC}            http://${smtpNetwork}"
+  echo
+
+  exit 1
+}
+
+function service_ip {
+    docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(dc ps -aq $1)
 }
 
 # Proxy the "help" command...
@@ -120,6 +154,11 @@ export PROJECT_NAME=${PROJECT_NAME:-$(basename $(pwd))}
 export LOCAL_USERNAME=${LOCAL_USERNAME:-$(id -un)}
 export LOCAL_UID=${LOCAL_UID:-$(id -u)}
 export LOCAL_GID=${LOCAL_UID:-$(id -g)}
+
+export EXPOSE_SHARE_SERVER_HOST=${EXPOSE_SHARE_SERVER_HOST:-"eu-1.sharedwithexpose.com"}
+export EXPOSE_SHARE_SERVER_PORT=${EXPOSE_SHARE_SERVER_PORT:-""}
+export EXPOSE_SHARE_SUBDOMAIN=${EXPOSE_SHARE_SUBDOMAIN:-"${PROJECT_NAME}"}
+export EXPOSE_SHARE_TOKEN=${EXPOSE_SHARE_TOKEN:-""}
 
 # Function that outputs is not running...
 function not_running {
@@ -325,10 +364,25 @@ elif [ "$1" == "env" ]; then
     echo "$1=${!1:-null}"
   fi
 
+# Share the site...
+elif [ "$1" == "share" ]; then
+    shift 1
+
+    if [ "$EXEC" == "yes" ]; then
+          dc run --rm -p 4040:4040 expose share http://$(service_ip php) \
+                --server-host="${EXPOSE_SHARE_SERVER_HOST}" \
+                --server-port="${EXPOSE_SHARE_SERVER_PORT}" \
+                --subdomain="${EXPOSE_SHARE_SUBDOMAIN}" \
+                --auth="${EXPOSE_SHARE_TOKEN}" \
+                "$@"
+          exit 1
+    else
+        sail_is_not_running
+    fi
+
 elif [ "$1" == "info" ]; then
   shift 1
-  echo "Visit the application in the browser:"
-  echo -e '\e]8;;http://127.0.0.1:8000\ahttp://127.0.0.1:8000\e]8;;\a'
+  display_info
 
 # Pass unknown commands to the "docker-compose" binary...
 else
