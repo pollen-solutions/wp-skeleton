@@ -10,29 +10,35 @@
 
 - [Features](#features)
 - [Installation](#installation)
+  - [Standard installation](#standard-installation)
+  - [Docker installation](#docker-installation)
 - [Configuration](#configuration)
+  - [Environment configuration](#environment-configuration)
+  - [Customize a local environment configuration](#customize-a-local-environment-configuration)
+  - [Environment Variable Types](#environment-variables-types)
+  - [Environment variable mapping](#environment-variable-mapping)
+  - [Use application variable](#use-application-variable)
 - [Directory structure](#directory-structure)
+  - [The Root directory structure](#the-root-directory-structure)
+  - [The Root directory details](#the-root-directory-details)
 
 ## Features
 
-The Pollen solutions **Wordpress Skeleton** component embeds :
+The Pollen solutions **Skeleton** component embeds :
 
 - [Composer](https://getcomposer.org/), as package manager for PHP libraries.
 - [ViteJS](https://vitejs.dev/) as assets bundler and responsible for compiling, transpilating, versioning,
   optimizing ...
 - [Pollen solutions components suite](https://github.com/pollen-solutions) that includes :
-    - A dependency injection container
-    - A routing system
-    - A templating library
-    - An asset manager and injector
-    - An expandable command line interface
-    - An event manager
-    - ...
+  - A dependency injection container
+  - A routing system
+  - A templating library
+  - An asset manager and injector
+  - An expandable command line interface
+  - An event manager
+  - ...
 - A preconfigured docker environment
 - ... And a lot of other kinds of magic !
-
-This is undoubtedly one of the best solutions to easily develop application with the WordPress couple and good PHP
-practices.
 
 To try it is already to contribute, you are welcome !
 
@@ -48,7 +54,7 @@ To try it is already to contribute, you are welcome !
 #### Launch installation
 
 ```sh
-composer create-project pollen-solutions/wp-skeleton your-app-name
+composer create-project pollen-solutions/skeleton your-app-name
 ```
 
 #### Serve the app
@@ -73,10 +79,10 @@ Visit the application in the browser:
 
 #### Launch installation
 
-Clone projet from the [github repository](https://github.com/pollen-solutions/wp-skeleton)
+Clone projet from the [Github repository](https://github.com/pollen-solutions/skeleton)
 
 ```sh
-git clone git@github.com:pollen-solutions/wp-skeleton.git
+git clone git@github.com:pollen-solutions/skeleton.git
 ```
 
 Launch application builder
@@ -88,6 +94,7 @@ bin/app.build
 Visit the application in the browser:
 
 - [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
 
 Retrieve [More details about docker usage](docs/Docker.md) in a Pollen application from the built-in documentation.
 
@@ -106,16 +113,10 @@ APP_URL=http://127.0.0.1:8000
 APP_TIMEZONE=Europe/Paris
 
 # DATABASE
-DB_DRIVER=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=wordpress
-DB_USERNAME=root
-DB_PASSWORD=
-DB_PREFIX=wp_
+DATABASE_URL=sqlite:///%%app.base_dir%%/var/database.sqlite
 ```
 
-### .env.local
+### Customize a local environment configuration
 
 To customize your application configuration, you can directly edit the ```.env``` file, but the best practice is to
 create a new ```.env.local``` file that will contain all the configuration attributes specific to your installation.
@@ -124,17 +125,14 @@ define new ones :
 
 ```dotenv
 # DATABASE
-DB_DATABASE=pollen-solutions
-DB_USERNAME=root
-DB_PASSWORD=
-DB_PREFIX=xyz_
+DATABASE_URL=mysql://root:root@mysql:3306/pollen
 
 #REDIS
 REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 ```
 
-### .env syntax
+### Environment variables types
 
 ```dotenv
 STRING_VAR=string
@@ -143,6 +141,8 @@ EMPTY_STRING=
 BOOL_VAR=true
 NULL_VAR=null
 ```
+
+### Environment variable mapping
 
 You can use another existing global or previously defined environment variable like this :
 
@@ -153,9 +153,9 @@ DB_PASSWORD=${MYSQL_PASSWORD}
 
 Note that, for security reasons, global environnement variables couldn't be overridden.
 
-### .env merge vars
+### Use application variable
 
-In some special cases, you may need to access application data to complete the
+In some special cases, you may need to access application variable to complete the
 configuration of your environment variables and the merge vars could help you.
 
 The paths of the application are natively available :
@@ -172,14 +172,6 @@ DATABASE_URL=sqlite:///%%app.base_dir%%/var/database.sqlite
 
 Pollen solutions suite uses the **vlucas/phpdotenv** library to work. More information
 on its [github repository](https://github.com/vlucas/phpdotenv).
-
-### wp-config.local.php
-
-Another way to configure your application is to create at the root of the application directory a file
-```wp-config.local.php```.
-Its syntax is similar to that of the native WordPress file ```wp-config.php```.
-[More details](https://wordpress.org/support/article/how-to-install-wordpress/#step-3-set-up-wp-config-php) on the
-official WordPress setup page.
 
 ## Directory structure
 

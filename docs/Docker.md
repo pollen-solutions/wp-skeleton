@@ -2,11 +2,33 @@
 
 Pollen comes with a ready-to-use environment through Docker technology.
 
+## Table of content
+
+- [Bigfish](#bigfish)
+  - [Configuring a Shell alias](#configuring-a-shell-alias)
+  - [Docker compose commands](#docker-compose-commands)
+  - [PHP Commands](#php-commands)
+  - [Composer commands](#composer-commands)
+  - [Previewing Emails](#previewing-emails)
+  - [NodeJS commands](#nodejs-commands)
+  - [NPM commands](#npm-commands)
+  - [NPX commands](#npx-commands)
+  - [Yarn commands](#yarn-commands)
+  - [Application Console commands](#application-console-commands)
+  - [Container CLI](#container-cli)
+  - [Environnement variable command](#environnement-variable-command)
+  - [Sharing your local application](#sharing-your-local-application)
+  - [Displaying services information](#displaying-services-information)
+- [Docker Compose](#docker-compose)
+  - [Prerequisites](#prerequisites-1)
+  - [Some use case](#some-use-case)
+
 ## BigFish
 
 Bifish is a light-weight command-line interface for interacting with Docker development environment.
+It draws on the work of Taylor Otwell and his team on [Laravel Sail](https://laravel.com/docs/sail).
 
-### Configuring an alias (recommended)
+### Configuring a Shell alias
 
 By default, bigfish command-line are invoked using the ```bin/bigfish``` script.
 Instead of repeatedly typing this instruction, configure a Bash alias may be a good alternative.
@@ -201,7 +223,7 @@ bigfish composer require monolog/monolog
 bigfish composer remove monolog/monolog 
 ```
 
-### SMTP
+### Previewing Emails
 
 Get the SMTP (Mailhog) command-line help.
 
@@ -359,23 +381,69 @@ bigfish env
 bigfish env LOCAL_USERNAME
 ```
 
+### Sharing your local application
+
+It may be convenient to share your application publicly, for testing purposes or because some third-party services may
+need to access your application int the background.
+The online service provided by [expose.dev](https://expose.dev) allows you to create a secure tunnel to expose publicly
+your local application on the web.
+
+#### Prerequisites
+
+1. Previously you must create a free account [Create a free account in expose.dev](https://expose.dev/register) and get
+   your personal token.
+2. Edit your ```.env``` or ```.env.local``` file and add :
+
+```dotenv
+EXPOSE_SHARE_TOKEN=your-personal-token
+```
+
+#### Start sharing
+
+```bash
+bigfish share
+```
+
+### Displaying services information
+
+```bash
+bigfish info
+```
+
 ## Docker-compose
 
 Instead of Bigfish CLI, for experienced users, all docker-compose commands are available from the root of the project.
 
-## Logs (e.g. php)
+### Prerequisites
+
+The ```docker-compose.yml``` requires environnement variables. Before issuing the command ```docker-compose``` you must
+sourcing your terminal session.
+
+```bash
+source bin/docker-compose.env.sh
+```
+
+And check config with :
+
+```bash
+docker-compose config
+```
+
+### Some use case
+
+#### Logs (e.g. php)
 
 ```bash
 docker-compose logs -f php
 ```
 
-## Composer
+#### Composer
 
 ```bash
 docker-compose exec php composer show
 ```
 
-## NPM
+#### NPM
 
 ```bash
 docker-compose exec node npm la
