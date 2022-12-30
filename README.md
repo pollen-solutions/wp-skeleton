@@ -37,7 +37,13 @@ The Pollen solutions **Skeleton** component embeds :
   - An expandable command line interface
   - An event manager
   - ...
-- A preconfigured docker environment
+- A preconfigured Docker environment integrating :
+  - A light-weight command-line interface for interact with Docker easily
+  - A PHP server that run through Apache
+  - A MySQL server
+  - An email previewer service (MailHog)
+  - A sharing local application service
+  - ...
 - ... And a lot of other kinds of magic !
 
 To try it is already to contribute, you are welcome !

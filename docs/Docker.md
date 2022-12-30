@@ -231,20 +231,32 @@ Get the SMTP (Mailhog) command-line help.
 bigfish smtp
 ```
 
-#### Send a mail
+#### Send a preconfigured test email
+
+ ```bash
+bigfish mail
+```
+
+#### Send a custom test email
 
 ```bash
 bigfish smtp sendmail --smtp-addr="smtp:1025" <<EOF
-From: Sender SampleName <from@example.com>
-To: Recipient SampleName <to@example.com>
-Subject: Hello World !
+From: Sender CustomName <custom-from@example.com>
+To: Recipient CustomName <custom-to@example.com>
+Subject: My custom email 
 
 Hey there,
 
-It's works
+Customization also works !
 
 Bye
 EOF
+```
+
+#### Send a custom test email from php
+
+```bash
+bigfish php -r "mail('to@example.com', 'PHP test email subject', 'PHP mail send works', 'From: from@example.com');" 
 ```
 
 ### NodeJS commands
