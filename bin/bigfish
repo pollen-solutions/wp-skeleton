@@ -28,10 +28,10 @@ if test -t 1; then
   fi
 fi
 
-BINARY=bigfish
-
 # Function that prints the available commands...
 function display_help {
+  BINARY=bigfish
+
   echo "Pollen Solutions Bigfish CLI"
   echo
   echo "${YELLOW}Configuring a Shell alias for the terminal session (recommended)${NC}"
@@ -106,8 +106,9 @@ function display_info {
   appNetwork=$(service_ip php)
   pmaNetwork=$(service_ip phpmyadmin)
   smtpNetwork=$(service_ip smtp)
+  mysqlNetwork=$(service_ip mysql)
 
-  echo "Pollen Solutions Application informations"
+  echo "Pollen Solutions Application services"
   echo
   echo "${YELLOW}Browse application:${NC}"
   echo "  ${GREEN}Local:${NC}              http://${appLocal}"
@@ -119,6 +120,14 @@ function display_info {
   echo "${YELLOW}MailHog:${NC}"
   echo "  ${GREEN}Network:${NC}            http://${smtpNetwork}"
   echo
+  echo "${YELLOW}MySQL:${NC}"
+  echo "  ${GREEN}Host:${NC}               ${mysqlNetwork}"
+  echo "  ${GREEN}Port:${NC}               3306"
+  echo "  ${GREEN}Database:${NC}           ${MYSQL_DATABASE}"
+  echo "  ${GREEN}User:${NC}               ${MYSQL_USER}"
+  echo "  ${GREEN}Password:${NC}           ${MYSQL_PASSWORD}"
+  echo "  ${GREEN}DSN:${NC}                mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${mysqlNetwork}:3306/${MYSQL_DATABASE}"
+  echo
 
   exit 1
 }
@@ -126,39 +135,6 @@ function display_info {
 function service_ip {
     docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(dc ps -aq $1)
 }
-
-# Proxy the "help" command...
-if [ $# -gt 0 ]; then
-  if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
-    display_help
-  fi
-else
-  display_help
-fi
-
-# Source the ".project.env" file if it is available...
-if [ -f ./docker/conf/.project.env ]; then
-  source ./docker/conf/.project.env 2>/dev/null
-fi
-
-if [ -f .env ]; then
-  source .env 2>/dev/null
-fi
-
-if [ -f .env.local ]; then
-  source .env.local 2>/dev/null
-fi
-
-# Define environment variables...
-export PROJECT_NAME=${PROJECT_NAME:-$(basename $(pwd))}
-export LOCAL_USERNAME=${LOCAL_USERNAME:-$(id -un)}
-export LOCAL_UID=${LOCAL_UID:-$(id -u)}
-export LOCAL_GID=${LOCAL_UID:-$(id -g)}
-
-export EXPOSE_SHARE_SERVER_HOST=${EXPOSE_SHARE_SERVER_HOST:-"eu-1.sharedwithexpose.com"}
-export EXPOSE_SHARE_SERVER_PORT=${EXPOSE_SHARE_SERVER_PORT:-""}
-export EXPOSE_SHARE_SUBDOMAIN=${EXPOSE_SHARE_SUBDOMAIN:-"${PROJECT_NAME}"}
-export EXPOSE_SHARE_TOKEN=${EXPOSE_SHARE_TOKEN:-""}
 
 # Function that outputs is not running...
 function not_running {
@@ -170,6 +146,20 @@ function not_running {
 function dc() {
   docker-compose -p "$PROJECT_NAME" "$@"
 }
+
+# Source the "docker-compose.env.sh" file if it is available...
+if [ -f ./bin/docker-compose.env.sh ]; then
+  source ./bin/docker-compose.env.sh 2>/dev/null
+fi
+
+# Proxy the "help" command...
+if [ $# -gt 0 ]; then
+  if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
+    display_help
+  fi
+else
+  display_help
+fi
 
 if [ -z "$SKIP_CHECKS" ]; then
   # Ensure that Docker is running...

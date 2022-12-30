@@ -10,9 +10,9 @@ services:
       dockerfile: docker/images/php/Dockerfile
     environment:
       MYSQL_HOST: mysql
-      MYSQL_DATABASE: ${PROJECT_NAME}
-      MYSQL_USER: ${PROJECT_NAME}
-      MYSQL_PASSWORD: ${PROJECT_NAME}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./:/var/www/html/
     ports:
@@ -25,9 +25,9 @@ services:
     command: mysqld --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${PROJECT_NAME}
-      MYSQL_USER: ${PROJECT_NAME}
-      MYSQL_PASSWORD: ${PROJECT_NAME}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   phpmyadmin:
     image: phpmyadmin
@@ -35,8 +35,8 @@ services:
     environment:
       PMA_ARBITRARY: 1
       PMA_HOST: mysql
-      PMA_USER: ${PROJECT_NAME}
-      PMA_PASSWORD: ${PROJECT_NAME}
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
 
   node:
     build:
