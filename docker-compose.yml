@@ -31,7 +31,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin
-    restart: always
     environment:
       PMA_ARBITRARY: 1
       PMA_HOST: mysql
