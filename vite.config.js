@@ -204,9 +204,6 @@ export default defineConfig(env => {
         }
       },
       minify: inDev(env) ? false : 'esbuild'
-    },
-    css: {
-      devSourcemap: true
     }
   }
 })
