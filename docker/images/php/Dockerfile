@@ -32,7 +32,6 @@ RUN install-php-extensions @composer exif gd imagick intl mysqli pdo_mysql socke
 # Sendmail
 RUN echo "hostname=localhost.localdomain" > /etc/ssmtp/ssmtp.conf
 RUN echo "mailhub=smtp:1025" >> /etc/ssmtp/ssmtp.conf
-RUN echo "localhost localhost.localdomain" >> /etc/hosts
 
 # Custom configuration
 RUN echo "sendmail_path=sendmail -i -t" >> ${PHP_INI_DIR}/conf.d/98-sendmail.ini
