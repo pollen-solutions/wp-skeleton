@@ -88,7 +88,7 @@ Visit the application in the browser:
 Clone projet from the [Github repository](https://github.com/pollen-solutions/skeleton)
 
 ```sh
-git clone git@github.com:pollen-solutions/skeleton.git
+git clone git@github.com:pollen-solutions/wp-skeleton.git
 ```
 
 Launch application builder
