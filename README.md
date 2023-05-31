@@ -60,7 +60,7 @@ To try it is already to contribute, you are welcome !
 #### Launch installation
 
 ```sh
-composer create-project pollen-solutions/skeleton your-app-name
+composer create-project pollen-solutions/wp-skeleton your-app-name
 ```
 
 #### Serve the app
