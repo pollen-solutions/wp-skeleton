@@ -85,15 +85,15 @@ Visit the application in the browser:
 
 #### Launch installation
 
-Clone projet from the [Github repository](https://github.com/pollen-solutions/skeleton)
-
 ```sh
-git clone git@github.com:pollen-solutions/wp-skeleton.git
+composer create-project pollen-solutions/wp-skeleton your-app-name --no-install --no-scripts
 ```
 
 Launch application builder
 
 ```sh
+cd ./your-app-name
+
 bin/app.build
 ```
 
